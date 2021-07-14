@@ -29,7 +29,6 @@ h1 {
 	height: 80%;
 	width: 80%;
 	margin: auto; 
-	border: 1px solid #cccccc;
 }
 
 .context{
@@ -74,20 +73,13 @@ h1 {
 	text-align: center;
 }
 
-.context-green {
-	background-color: #90ee90;
-}
-.context-yellow {
-	background-color: #ffff00;
-}
-.context-pink {
-	background-color: #ffb6c1;
-}
-.context-cyan {
-	background-color: #00ffff;
-}
 .action-span {
 	cursor: pointer;
 	padding-right: 5px;
+	color: #000000;
 }
 
+.disabled {
+	cursor: auto;
+	color: #aaaaaa;
+}

@@ -124,12 +124,12 @@ function makeDiv(id, name, colour){
 	let rename = document.createElement('span')
 	let remove = document.createElement('span')
 	
-	plus.innerHTML = '&plus;';
-	minus.innerHTML = '&minus;';
-	left.innerHTML = '&nwarr;';
-	right.innerHTML = '&searr;';
-	rename.innerHTML = '&#9998;';
-	remove.innerHTML = '&times;';
+	plus.innerHTML = '&plus;&#xFE0E;';
+	minus.innerHTML = '&minus;&#xFE0E;';
+	left.innerHTML = '&nwarr;&#xFE0E;';
+	right.innerHTML = '&searr;&#xFE0E;';
+	rename.innerHTML = '&#9998;&#xFE0E;';
+	remove.innerHTML = '&times;&#xFE0E;';
 
 	plus.title = 'Increase Size';
 	minus.title = 'Decrease Size';

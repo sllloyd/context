@@ -3,11 +3,8 @@
 	Version 1.0
 	context.js
 	
-	Contains all JavaScript
+	Contains all JavaScript functions
 	
-	Inspired by the Justin Guitar Theory Course Jam Buddy
-	https://www.justinguitar.com/categories/practical-fast-fun-music-theory
-
 	Copyright 2021 Steve Lloyd
 	Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 	and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -27,44 +24,91 @@
 
 "use strict"
 
+var version = 1.0;
 var step = 1.2;
-var sizes = {};
-var order = [];
+var widths = {};
+var config = {};
 var total = 0.0;
 var startWidth = 300;
 var startHeight = 200;
 var startFontSize = 20;
+var minWidth = 150;
+var maxWidth = 800;
+
 //                pink      yellow      cyan      green      purple   orange
 var colours = ['#ffb6c1', '#faffc7', '#ccf1ff', '#90ee90', '#e0d7ff', '#ffdac1'];
+var names = ['Family', 'Neighbourhood', 'Peer Group', 'School'];
 
 //-----------------------------------------------------------------
 
-function changeSize(id, value, adjustOthers=true){
+function changeSize(id, scale, adjustOthers=true){
 	let div = document.getElementById('context-' + id);
 	let nameDiv = document.getElementById('context-name-' + id);
-	let newWidth = div.offsetWidth * value;
-	let newHeight = div.offsetHeight * value;
-	let oldTotal = total;
-	total = total - sizes[id];
+	let width = div.offsetWidth;
+	let newWidth = width * scale;
+	let newHeight = div.offsetHeight * scale;
+	
+	let plus = document.getElementById('context-plus-' + id);
+	let minus = document.getElementById('context-minus-' + id);
+	plus.classList.remove('disabled');
+	minus.classList.remove('disabled');
+	
+	if (newWidth > maxWidth){
+		newWidth = maxWidth;
+		newHeight = newWidth * startHeight / startWidth;
+		scale = newWidth / width;
+		plus.classList.add('disabled');
+	}
+	if (newWidth < minWidth){
+		newWidth = minWidth;
+		newHeight = newWidth * startHeight / startWidth;
+		scale = newWidth / width;
+		minus.classList.add('disabled');
+	}
+	
+	total = total - widths[id];
 	let otherTotal = total;
-	sizes[id] = newWidth * newHeight;
-	total = total + sizes[id];
+	widths[id] = newWidth;
+	total = total + widths[id];
+	
 	div.style.width =  newWidth + 'px';
 	div.style.height = newHeight + 'px';
+	
 	let fontSize = nameDiv.style.fontSize;
 	fontSize = fontSize.replace('pt', '');
-	nameDiv.style.fontSize = fontSize * value + 'pt';
-//	alert(nameDiv + ' ' + fontSize)
-//	nameDiv.style.fontSize = fontSize*
+	let newFontSize = fontSize * scale;
+	nameDiv.style.fontSize = newFontSize + 'pt';
+
+	config.state[id].width = newWidth;
+	config.state[id].height = newHeight;
+	config.state[id].font_size = newFontSize;
+	config.state[id].scale = config.state[id].scale * scale;
+	
+	saveConfig();
+	
 	if (!adjustOthers) return;
 	
-	let amount = oldTotal - total;
-//	alert(total + ' ' + ratio);
-	for (let i=0; i<4; i++){
-		if (i == id) continue;
-		let scale = Math.sqrt(amount) * sizes[i] / otherTotal;
-		changeSize(i, scale, false)
+	let diff = newWidth - width;
+	for (let i=0; i<config.order.length; i++){
+		let id2 = config.order[i];
+		if (id2 == id) continue;
+		
+		let idiff = diff * widths[id2] / otherTotal;
+		let newScale = (widths[id2] - idiff)/widths[id2];
+		changeSize(id2, newScale, false)
 	}
+}
+
+//-----------------------------------------------------------------
+
+function createId(length){
+	const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	let id = ' ';
+	for (let i = 0; i < length; i++) {
+		id += characters.charAt(Math.floor(Math.random() * characters.length));
+	}
+
+	return id;
 }
 
 //-----------------------------------------------------------------
@@ -82,11 +126,10 @@ function increaseSize(id){
 //-----------------------------------------------------------------
 
 function initialise(){
-	makeDiv(0, 'Family', colours[0]);
-	makeDiv(1, 'Neighbourhood', colours[1]);
-	makeDiv(2, 'Peer Group', colours[2]);
-	makeDiv(3, 'School', colours[3]);
-
+	readConfig();
+	for (let id of config.order){
+		makeDiv(id);
+	}
 	setIcons(); 
 }
 
@@ -105,10 +148,7 @@ function rename(id){
 
 //-----------------------------------------------------------------
 
-function makeDiv(id, name, colour){
-	let width = startWidth;
-	let height = startHeight;
-	let fontSize = startFontSize;
+function makeDiv(id){
 	
 	let container = document.getElementById('container');
 	
@@ -168,16 +208,16 @@ function makeDiv(id, name, colour){
 	right.id = 'context-right-' + id
 	context.id = 'context-' + id;
 	contextName.id = 'context-name-' + id;
-	contextName.innerText = name;
+	contextName.innerText = config.state[id].name;
 	
-	context.style.width = width + 'px';
-	context.style.height = height + 'px';
-	context.style.backgroundColor = colour;
+	context.style.width = config.state[id].width + 'px';
+	context.style.height = config.state[id].height + 'px';
+	context.style.backgroundColor = config.state[id].colour;
 	
-	contextName.style.fontSize = fontSize + 'pt';
+	contextName.style.fontSize = config.state[id].font_size + 'pt';
 	
-	sizes[id] = width * height;
-	total += sizes[id];
+	widths[id] = config.state[id].width;
+	total += widths[id];
 	
 	contextMain.appendChild(contextName);
 	contextHeader.appendChild(plus);
@@ -189,54 +229,86 @@ function makeDiv(id, name, colour){
 	context.appendChild(contextMain);
 	context.appendChild(contextHeader);
 	container.appendChild(context);
-	
-	order.push(id);
 }
 
 //-----------------------------------------------------------------
 
 function moveDiv(id, ord, newOrd, newOrd2){
 	let container = document.getElementById('container');
-	let div = document.getElementById('context-' + order[ord]);
-	let divBefore = document.getElementById('context-' + order[newOrd]);
+	let div = document.getElementById('context-' + config.order[ord]);
+	let divBefore = document.getElementById('context-' + config.order[newOrd]);
 	
 	// Move the div
 	container.insertBefore(div, divBefore);
 	
-	// Remove this entry
-	order.splice(ord, 1)
+	// Remove this entry from order
+	config.order.splice(ord, 1)
 	// Add it back again
-	order.splice(newOrd2, 0, id)
-//	alert(order);
+	config.order.splice(newOrd2, 0, id)
 
 	setIcons();
+	saveConfig();
 }
 
 //-----------------------------------------------------------------
 
 function moveLeft(id){
-	let ord = order.indexOf(id);
+	let ord = config.order.indexOf(id);
 	if (ord > 0) moveDiv(id, ord, ord-1, ord-1);
 }
 	
 //-----------------------------------------------------------------
 
 function moveRight(id){
-	let ord = order.indexOf(id);
-	if (ord < (order.length - 1)) moveDiv(id, ord, ord+2, ord+1);
+	let ord = config.order.indexOf(id);
+	if (ord < (config.order.length - 1)) moveDiv(id, ord, ord+2, ord+1);
+}
+
+//-----------------------------------------------------------------
+
+function readConfig(){
+	let storedVersion = 0;
+	if (localStorage.getItem('context-weighting') !== null){
+		config = JSON.parse(localStorage.getItem('context-weighting')); 
+		storedVersion = config.version;
+	}
+
+	if (storedVersion < 1.0){
+		config = {};
+		config.version = 0.0;
+		config.state = {}
+		config.order = [];
+		for (let i=0; i<4; i++){
+			let id = createId(6);
+			config.state[id]= {'name': names[i], 'colour': colours[i], 'width': startWidth, 'height': startHeight, 'font_size': startFontSize, 'scale': 1.0, 'seq': i};
+			config.order.push(id);
+		}
+		config.free = [4, 5];
+	}
+
+	if (config.version != version){
+		config.version = version;
+		saveConfig();
+	}
+}
+
+//-----------------------------------------------------------------
+
+function saveConfig(){
+	localStorage.setItem('context-weighting', JSON.stringify(config));
 }
 
 //-----------------------------------------------------------------
 
 function setIcons(){
-	for (let id of order){
-		let ord = order.indexOf(id);
+	for (let id of config.order){
+		let ord = config.order.indexOf(id);
 		let left = document.getElementById('context-left-' + id);
 		let right = document.getElementById('context-right-' + id);
 		left.classList.remove('disabled');
 		right.classList.remove('disabled');
 		if (ord == 0) left.classList.add('disabled');
-		if (ord == (order.length - 1)) right.classList.add('disabled');
+		if (ord == (config.order.length - 1)) right.classList.add('disabled');
 	}
 }
 

@@ -20,15 +20,32 @@ html, body {
 h1 {
 	text-align: center;
 }
-
+#main {
+	position: relative;
+	min-height: 100%;
+	width: 100%;
+	padding-bottom: 30px;
+}
 #container{
 	display: flex;
 	flex-flow: row wrap;
 	justify-content: space-around;
 	align-items: center;
-	height: 80%;
-	width: 80%;
+/*	height: 80%; */
+	width: 80%; 
 	margin: auto; 
+}
+
+#footer{
+/*    background-color: #96a0b0; */
+	position: absolute;
+	width: 100%;
+/*    font-size: 11px;
+	line-height: 28px;
+	bottom: 0px; */
+/*    color: #ffffff; */
+	padding: 10px;
+    height: 50px;
 }
 
 .context{
@@ -83,3 +100,18 @@ h1 {
 	cursor: auto;
 	color: #aaaaaa;
 }
+.button {
+	display: inline-block;
+	font-size: 11px;
+	text-align: center;
+	padding: 4px;
+	min-width: 50px;
+	background: #ffff;
+	cursor: pointer;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+}
+.button:hover {
+	background: #ddd;
+}
+

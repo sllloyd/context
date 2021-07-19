@@ -145,6 +145,18 @@ function rename(id){
 
 //-----------------------------------------------------------------
 
+function reset(){
+	let result = confirm('Are you sure you want to reset? This will remove all your customisations and additional contexts.');
+	if (!result) return;
+	
+	localStorage.removeItem('context-weighting');
+	let container = document.getElementById('container');
+	container.innerHTML = '';
+	initialise();
+}
+
+//-----------------------------------------------------------------
+
 
 //-----------------------------------------------------------------
 

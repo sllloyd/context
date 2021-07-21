@@ -177,6 +177,14 @@ function initialise(){
 
 function linkContext(id){
 
+	if (startLink == id){
+		let link = document.getElementById('context-link-' + id);
+		link.classList.remove('link-blue');
+		startLink = '';
+		setLinkIcons();
+		return;
+	}
+	
 	if (startLink == ''){
 		startLink = id;
 		let free = 0;

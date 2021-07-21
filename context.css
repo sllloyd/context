@@ -12,67 +12,69 @@
 
 html, body {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 20px;
+	font-size: 11pt;
 	height: 100%;
 	width: 100%;
 	background-color: #ffffff;
 }
-h1 {
-	text-align: center;
+body{ 
+	display:flex; 
+	flex-direction:column; 
+	height:100vh; 
+	margin:0; 
 }
-#main {
-	position: relative;
-	min-height: 100%;
+
+svg {
+	position: absolute;
+	top: 0;
+	left: 0;
 	width: 100%;
-	padding-bottom: 30px;
+	height: 100%;
+}
+line {
+	cursor: pointer;
+}	
+#header {
+	font-size: 30pt;
+	font-weight: bold;
+	text-align: center;
+	padding: 30px 10px 10px 10px;
 }
 #container{
+	position: relative;
 	display: flex;
 	flex-flow: row wrap;
 	justify-content: space-around;
 	align-items: center;
-/*	height: 80%; */
 	width: 80%; 
 	margin: auto; 
 }
 
 #footer{
-/*    background-color: #96a0b0; */
-	position: absolute;
-	width: 100%;
-/*    font-size: 11px;
-	line-height: 28px;
-	bottom: 0px; */
-/*    color: #ffffff; */
-	padding: 10px;
+	margin-top:auto;
+  	padding: 10px;
     height: 50px;
 }
 
 .context{
 	display: inline-block;
 	position: relative;
-/*	display: inline-block;
-	flex-direction: column;
-	justify-content: flex-start;
-	align-items: center; */
 	width: 300px;
 	height: 200px;
 	border: 2px solid #000000;
 	border-radius: 8px;
-	margin: 5px 5px 5px 5px;
+	margin: 10px 10px 10px 10px;
+	z-index: 10;
 }
 .context-header {
 	position: absolute;
 	top: 0px;
 	width: 100%;
-/*	border-bottom: 1px solid #ccc; */
 	padding-bottom: 5px;
 	padding-right: 5px;
 	margin-bottom: 5px;
-/*	display: flex; */
 	flex-flow: row nowrap; /* Align on the same line */
 	justify-content: space-between; /* Equal margin between the child elements */
-/*	align-items: right; */
 	text-align: right;
 }
 .context-main {
@@ -113,5 +115,25 @@ h1 {
 }
 .button:hover {
 	background: #ddd;
+}
+.link-blue {
+	color: transparent;
+	text-shadow: 0 0 0 #0000aa;
+	cursor: auto;
+}
+.link-green {
+	color: transparent;
+	text-shadow: 0 0 0 #00aa00;
+}
+.link-disabled {
+	color: transparent;
+	text-shadow: 0 0 0 #aaaaaa;
+	cursor: auto;
+}
+
+#delete-line {
+  display: none;
+  position: absolute;
+  z-index: 10;
 }
 

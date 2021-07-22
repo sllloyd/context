@@ -179,7 +179,7 @@ function linkContext(id){
 
 	if (startLink == id){
 		let link = document.getElementById('context-link-' + id);
-		link.classList.remove('link-blue');
+		link.classList.remove('link-start');
 		startLink = '';
 		setLinkIcons();
 		return;
@@ -195,13 +195,13 @@ function linkContext(id){
 				link.classList.add('link-disabled');
 				continue;
 			}
-			link.classList.add('link-green');
+			link.classList.add('link-free');
 			free++;
 		}
 		// Somewhere to go?
 		if (free > 0){
 			let link = document.getElementById('context-link-' + id);
-		 	link.classList.add('link-blue');
+		 	link.classList.add('link-start');
 		 }
 		return;
 	}
@@ -488,8 +488,8 @@ function setLinkIcons(){
 	for (let id of config.order){
 		let link = document.getElementById('context-link-' + id);
 		link.classList.remove('link-disabled');
-		link.classList.remove('link-blue');
-		link.classList.remove('link-green');
+		link.classList.remove('link-start');
+		link.classList.remove('link-free');
 		
 		// Count how many links this has
 		

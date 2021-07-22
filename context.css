@@ -116,11 +116,11 @@ line {
 .button:hover {
 	background: #ddd;
 }
-.link-blue {
+.link-start {
 	color: transparent;
 	text-shadow: 0 0 0 #0000aa;
 }
-.link-green {
+.link-free {
 	color: transparent;
 	text-shadow: 0 0 0 #00aa00;
 }

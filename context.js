@@ -24,18 +24,21 @@
 
 "use strict"
 
-var version = 1.1;
-var step = 1.2;
+const version = 1.1;
+const step = 1.2;
 var widths = {};
 var config = {};
 var total = 0.0;
-var startWidth = 300;
-var startHeight = 200;
-var startFontSize = 20;
-var minWidth = 150;
-var maxWidth = 800;
+const startWidth = 300;
+const startHeight = 200;
+const startFontSize = 20;
+const minWidth = 150;
+const maxWidth = 800;
 var startLink = '';
 const svgns = "http://www.w3.org/2000/svg";
+const renameHelp = 'Press Return/Enter to save, ESC to cancel';
+const linkStartHelp = 'Started link from here';
+const linkEndtHelp = 'Click on the green links symbol to finish link';
 
 //                pink      yellow      cyan      green      purple   orange
 var colours = ['#ffb6c1', '#faffc7', '#ccf1ff', '#90ee90', '#e0d7ff', '#ffdac1'];
@@ -191,17 +194,23 @@ function linkContext(id){
 		for (let id1 of config.order){
 			if (id1 == id) continue;
 			let link = document.getElementById('context-link-' + id1);
+			let help = document.getElementById('context-help-' + id1);
 			if (config.lines.includes('line-' + id + '-' + id1) || config.lines.includes('line-' + id1 + '-' + id)){
 				link.classList.add('link-disabled');
 				continue;
 			}
 			link.classList.add('link-free');
+			help.innerText = linkEndtHelp;
+			help.style.display = 'block';
 			free++;
 		}
 		// Somewhere to go?
 		if (free > 0){
 			let link = document.getElementById('context-link-' + id);
+			let help = document.getElementById('context-help-' + id);
 		 	link.classList.add('link-start');
+			help.innerText = linkStartHelp;
+			help.style.display = 'block';
 		 }
 		return;
 	}
@@ -221,6 +230,9 @@ function makeDiv(id){
 	let contextHeader = document.createElement('div');
 	let contextMain = document.createElement('div');
 	let contextName = document.createElement('div');
+	let contextEdit = document.createElement('div');
+	let contextInput = document.createElement('input');
+	let contextHelp = document.createElement('div');
 	
 	let plus = document.createElement('span');
 	let minus = document.createElement('span');
@@ -261,36 +273,53 @@ function makeDiv(id){
 	rename.addEventListener('click', function(){renameContext(id);});
 	remove.addEventListener('click', function(){removeContext(id);});
 	link.addEventListener('click', function(){linkContext(id);});
+	contextInput.addEventListener('keyup', onKeyUp);
 
 	
 	context.classList.add('context');
 	contextHeader.classList.add('context-header');
 	contextMain.classList.add('context-main');
 	contextName.classList.add('context-name');
+	contextEdit.classList.add('context-edit');
+	contextInput.classList.add('context-input');
+	contextHelp.classList.add('context-help');
 	
+	contextInput.setAttribute('type', 'text');
+	contextInput.setAttribute('size', 15);
+	contextHelp.innerText = '';
 	// Temporary
-	rename.classList.add('disabled');
+//	rename.classList.add('disabled');
 	remove.classList.add('disabled');
 	
 	plus.id = 'context-plus-' + id
 	minus.id = 'context-minus-' + id
 	left.id = 'context-left-' + id
 	right.id = 'context-right-' + id
+	rename.id = 'context-rename-' + id
+	remove.id = 'context-remove-' + id
 	link.id = 'context-link-' + id
+	
 	context.id = 'context-' + id;
 	contextName.id = 'context-name-' + id;
 	contextName.innerText = config.state[id].name;
+	contextEdit.id = 'context-edit-' + id;
+	contextInput.value = config.state[id].name;
+	contextInput.id = 'context-input-' + id;
+	contextHelp.id = 'context-help-' + id;
 	
 	context.style.width = config.state[id].width + 'px';
 	context.style.height = config.state[id].height + 'px';
 	context.style.backgroundColor = config.state[id].colour;
-	
 	contextName.style.fontSize = config.state[id].font_size + 'pt';
+	contextEdit.style.display = 'none';
+	contextHelp.style.display = 'none';
 	
 	widths[id] = config.state[id].width;
 	total += widths[id];
 	
 	contextMain.appendChild(contextName);
+	contextEdit.appendChild(contextInput);
+	contextMain.appendChild(contextEdit);
 	contextHeader.appendChild(plus);
 	contextHeader.appendChild(minus);
 	contextHeader.appendChild(left);
@@ -300,6 +329,7 @@ function makeDiv(id){
 	contextHeader.appendChild(link);
 	context.appendChild(contextMain);
 	context.appendChild(contextHeader);
+	context.appendChild(contextHelp);
 	container.appendChild(context);
 }
 
@@ -408,6 +438,33 @@ function moveRight(id){
 
 //-----------------------------------------------------------------
 
+function onKeyUp(event){
+	if (event.keyCode !== 13 && event.keyCode != 27) return;
+	
+	let id = event.currentTarget.id
+	id = id.replace('context-input-', '');
+
+	let input = document.getElementById('context-input-' + id);	
+	let view = document.getElementById('context-name-' + id);
+	let edit = document.getElementById('context-edit-' + id);
+	let help = document.getElementById('context-help-' + id);
+	
+	// If Escape key (13) - do nothing except quit
+	
+	// Enter/Return key
+	if (event.keyCode === 13){
+		view.innerText = input.value;
+		config.state[id].name = input.value;
+		saveConfig();
+	}
+	
+	view.style.display = 'block';
+	edit.style.display = 'none';
+	help.style.display = 'none';	
+}
+
+//-----------------------------------------------------------------
+
 function readConfig(){
 	let storedVersion = 0;
 	if (localStorage.getItem('context-weighting') !== null){
@@ -445,6 +502,13 @@ function removeContext(id){
 //-----------------------------------------------------------------
 
 function renameContext(id){
+	document.getElementById('context-name-' + id).style.display = 'none';
+	document.getElementById('context-edit-' + id).style.display = 'block';
+	document.getElementById('context-input-' + id).focus();	
+	
+	let help = document.getElementById('context-help-' + id);
+	help.innerText = renameHelp;
+	help.style.display = 'block';	
 }
 
 //-----------------------------------------------------------------
@@ -487,6 +551,9 @@ function setLinkIcons(){
 	
 	for (let id of config.order){
 		let link = document.getElementById('context-link-' + id);
+		let help = document.getElementById('context-help-' + id);
+		
+		help.style.display = 'none';
 		link.classList.remove('link-disabled');
 		link.classList.remove('link-start');
 		link.classList.remove('link-free');

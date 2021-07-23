@@ -38,7 +38,7 @@ var startLink = '';
 const svgns = "http://www.w3.org/2000/svg";
 const renameHelp = 'Press Return/Enter to save, ESC to cancel';
 const linkStartHelp = 'Started link from here';
-const linkEndtHelp = 'Click on the green links symbol to finish link';
+const linkEndHelp = 'Click on the green links symbol to finish link';
 
 //                pink      yellow      cyan      green      purple   orange
 var colours = ['#ffb6c1', '#faffc7', '#ccf1ff', '#90ee90', '#e0d7ff', '#ffdac1'];
@@ -200,7 +200,7 @@ function linkContext(id){
 				continue;
 			}
 			link.classList.add('link-free');
-			help.innerText = linkEndtHelp;
+			help.innerText = linkEndHelp;
 			help.style.display = 'block';
 			free++;
 		}

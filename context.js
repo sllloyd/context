@@ -68,21 +68,30 @@ var totalWidth = 0.0;
 
 function addContext(){
 	let num = config.free.shift();
-	if (!num) return;
+	if (num === undefined) return;
+	
+	let aveWidth = 0;
+	let aveHeight = 0;
+	for (let id1 of config.order){
+		let div = document.getElementById('context-' + id1);
+		aveWidth += div.offsetWidth;
+		aveHeight += div.offsetHeight;
+	}
+	aveWidth /= config.order.length;
+	aveHeight /= config.order.length;
 	
 	let id = createId(idLength);
-	config.state[id]= {'name': '', 'colour': colours[num], 'width': startWidth, 'height': startHeight, 'font_size': startFontSize, 'scale': 1.0, 'seq': num};
+	config.state[id]= {'name': '', 'colour': colours[num], 'width': aveWidth, 'height': aveHeight, 'font_size': startFontSize, 'scale': 1.0, 'seq': num};
 	config.order.push(id);
 	makeContext(id);
 	renameContext(id);
 	saveConfig();
 	setIcons();
 	
-	// Shrink the others a bit
+	// Shrink them all a bit
 	
 	let scale = (config.order.length - 1) / config.order.length;
 	for (let id1 of config.order){
-		if (id1 == id) continue;
 		changeSize(id1, scale, false);
 	}
 	

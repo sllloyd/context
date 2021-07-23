@@ -26,24 +26,42 @@
 
 const version = 1.1;
 const step = 1.2;
-var widths = {};
-var config = {};
-var total = 0.0;
 const idLength = 6;
 const startWidth = 300;
 const startHeight = 200;
 const startFontSize = 20;
 const minWidth = 150;
 const maxWidth = 800;
-var startLink = '';
+const defaultNumber = 4;
+const maxNumber = 6;
+const inputSize = 15;
+// These control the attributes of the lines
+const strokeWidth = '3px';
+const strokeColour = '#000000';
+const strokeDasharray = '4';
+const fakeStrokeWidth = '10px'
+const fakeStrokeColour = '#ffffff';
+// These control the remove button
+const removeTimeout = 3000;	// milliseconds
+const removeOffsetX = 5;
+const removeOffsetY = 30;
+
+const returnCode = 13;
+const escapeCode = 27;
+
 const svgns = "http://www.w3.org/2000/svg";
 const renameHelp = 'Press Return/Enter to save, ESC to cancel';
 const linkStartHelp = 'Started link from here';
 const linkEndHelp = 'Click on the green links symbol to finish link';
-
 //                pink      yellow      cyan      green      purple   orange
-var colours = ['#ffb6c1', '#faffc7', '#ccf1ff', '#90ee90', '#e0d7ff', '#ffdac1'];
-var names = ['Family', 'Neighbourhood', 'Peer Group', 'School', '', ''];
+const colours = ['#ffb6c1', '#faffc7', '#ccf1ff', '#90ee90', '#e0d7ff', '#ffdac1'];
+const names = ['Family', 'Neighbourhood', 'Peer Group', 'School', '', ''];
+
+var startLink = '';
+var widths = {};
+var config = {};
+var totalWidth = 0.0;
+
 
 //-----------------------------------------------------------------
 
@@ -97,10 +115,10 @@ function changeSize(id, scale, adjustOthers=true){
 		minus.classList.add('disabled');
 	}
 	
-	total = total - widths[id];
-	let otherTotal = total;
+	totalWidth = totalWidth - widths[id];
+	let otherTotal = totalWidth;
 	widths[id] = newWidth;
-	total = total + widths[id];
+	totalWidth = totalWidth + widths[id];
 	
 	div.style.width =  newWidth + 'px';
 	div.style.height = newHeight + 'px';
@@ -293,7 +311,7 @@ function makeContext(id){
 	contextHelp.classList.add('context-help');
 	
 	contextInput.setAttribute('type', 'text');
-	contextInput.setAttribute('size', 15);
+	contextInput.setAttribute('size', inputSize);
 	contextHelp.innerText = '';
 	
 	plus.id = 'context-plus-' + id
@@ -320,7 +338,7 @@ function makeContext(id){
 	contextHelp.style.display = 'none';
 	
 	widths[id] = config.state[id].width;
-	total += widths[id];
+	totalWidth += widths[id];
 	
 	contextMain.appendChild(contextName);
 	contextEdit.appendChild(contextInput);
@@ -347,8 +365,11 @@ function makeLine(id1, id2, addToLines=true){
 	let svg = document.getElementById('svg');
 
 	let line = document.createElementNS(svgns, 'line');
-	let fakeLine = document.createElementNS(svgns, 'line');
 	line.id = lineId;
+
+	// We make a fake line to make the click target area bigger
+
+	let fakeLine = document.createElementNS(svgns, 'line');
 	fakeLine.id = fakeId;
 	
 	if (addToLines){
@@ -357,11 +378,11 @@ function makeLine(id1, id2, addToLines=true){
 		setLinkIcons();
 	}
 
-	line.setAttribute('stroke-width', '3px');
-	line.setAttribute('stroke', '#000000');
-	line.setAttribute('stroke-dasharray', '4');
-	fakeLine.setAttribute('stroke-width', '10px');
-	fakeLine.setAttribute('stroke', '#ffffff');
+	line.setAttribute('stroke-width', strokeWidth);
+	line.setAttribute('stroke', strokeColour);
+	line.setAttribute('stroke-dasharray', strokeDasharray);
+	fakeLine.setAttribute('stroke-width', fakeStrokeWidth);
+	fakeLine.setAttribute('stroke', fakeStrokeColour);
 	
 	moveLine(line, id1, id2); 
 	moveLine(fakeLine, id1, id2); 
@@ -444,7 +465,7 @@ function moveRight(id){
 //-----------------------------------------------------------------
 
 function onKeyUp(event){
-	if (event.keyCode !== 13 && event.keyCode != 27) return;
+	if (event.keyCode !== returnCode && event.keyCode != escapeCode) return;
 	
 	let id = event.currentTarget.id
 	id = id.replace('context-input-', '');
@@ -454,10 +475,10 @@ function onKeyUp(event){
 	let edit = document.getElementById('context-edit-' + id);
 	let help = document.getElementById('context-help-' + id);
 	
-	// If Escape key (13) - do nothing except quit
+	// If Escape key - do nothing except quit
 	
 	// Enter/Return key
-	if (event.keyCode === 13){
+	if (event.keyCode === returnCode){
 		view.innerText = input.value;
 		config.state[id].name = input.value;
 		saveConfig();
@@ -482,12 +503,17 @@ function readConfig(){
 		config.version = 0.0;
 		config.state = {}
 		config.order = [];
-		for (let i=0; i<4; i++){
-			let id = createId(idLength);
-			config.state[id]= {'name': names[i], 'colour': colours[i], 'width': startWidth, 'height': startHeight, 'font_size': startFontSize, 'scale': 1.0, 'seq': i};
-			config.order.push(id);
+		config.free = [];
+		for (let i=0; i<maxNumber; i++){
+			if (i < defaultNumber){
+				let id = createId(idLength);
+				config.state[id]= {'name': names[i], 'colour': colours[i], 'width': startWidth, 'height': startHeight, 'font_size': startFontSize, 'scale': 1.0, 'seq': i};
+				config.order.push(id);
+			}
+			else {
+				config.free.push(i);
+			}
 		}
-		config.free = [4, 5];
 	}
 	if (storedVersion < 1.1){
 		config.lines = [];
@@ -659,14 +685,14 @@ function showMenu(event){
 
 	document.body.appendChild(div);
 	
-	let x = event.pageX + 5;
-	let y = event.pageY - 30;
+	let x = event.pageX + removeOffsetX;
+	let y = event.pageY - removeOffsetY;
 	div.style.left = x + 'px';
 	div.style.top = y + 'px';
 	
 	setTimeout(function(){
 		div.remove();
-		}, 3000);
+		}, removeTimeout);
 }
 
 //-----------------------------------------------------------------

@@ -13,8 +13,46 @@
 	<div id="header">Context Weighting</div>
 	<div id="container"></div>
 	<div id="footer">
+		<span class="button" onclick="showHelp()"' id="help-button" title="Show Help">Help</span>
 		<span class="button" onclick="resetConfig()"' id="reset-button" title="Reset to default configuration">Reset</span>
 		<span class="button" onclick="addContext()"' id="add-button" title="Add a new context">Add</span>
+	</div>
+	<div id="help-container">
+		<div id="help-content">
+			<div>
+			<p>This tool allows you to produce a visual representation of the relative priorities of various contexts (Contextual Weighting) by allowing you to change the size, order, names of and relationships between various contexts.</p>
+			<p>The tools start with four context boxes of equal size. The icons at the top of each box allow you to perform the following:
+			<dl>
+			<dt>&plus;&#xFE0E; Increase Size
+			<dd>Increases the size of the box. All the other boxes are automatically decreased in size.
+			<dt>&minus;&#xFE0E; Decrease Size
+			<dd>Decrease the size of the box. All the other boxes are automatically increased in size.
+			<dt>&nwarr;&#xFE0E; Move left/upwards
+			<dd>Moves the box left or upwards by swapping its position with the one to the left of it. If the box is already at the top left the icon is greyed out.
+			<dt>&searr;&#xFE0E; Move right/downwards
+			<dd>Moves the box right or downwards by swapping its position with the one to the right of it. If the box is already at the bottom right the icon is greyed out.
+			<dt>&#9998;&#xFE0E; Rename context
+			<dd>Allows you to change the name of the context. Edit the text in the box provided and press Return/Enter to save it or ESC to cancel the change.
+			<dt>&#128279;&#xFE0E; Link to another context
+			<dd>Allows you to draw a dotted line between two boxes to show a relationship between contexts. Click on the symbol on one box and it will turn blue and the symbols on other boxes (that don't already have a line from this box) will turn green. Click on one of the green symbols to complete the line. You can remove a line by clicking on it and clicking on the 'Remove' button. Click on the blue symbol again to cancel this operation.
+			<dt>&times;&#xFE0E; Delete the context
+			<dd>Allows you to delete this context (and all lines connected to it). You will be prompted to confirm before the box is deleted.
+			</dl>
+			<p>The buttons at the bottom left of the page perform the following:
+			<dl>
+			<dt>Help
+			<dd>Displays this help information.
+			<dt>Reset
+			<dd>Resets the boxes to their default configuration. This will remove all customisations, including lines and additional contexts, resetting the sizes, names and order of the boxes. You will be prompted to confirm before this happens.
+			<dt>Add
+			<dd>Adds a new context. You will need to supply a name in the text box provided and press Return/Enter to save it. A maximum of six boxes are allowed. This button is greyed out if there are already six boxes.
+			<p>For further information about context weighting see the <a href="https://www.csnetwork.org.uk/en/toolkit/assessment/context-assessments-and-weighting" target="_blank">Contextual Safeguarding Network</a>.</p>
+			</div>
+			<div id="help-footer">
+				<span class="button" onclick="hideHelp()"' id="close-help" title="Close Help">Close</span>
+			</div>
+		</div>
+		</div>
 	</div>
 </body>
 </html>

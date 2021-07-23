@@ -6,6 +6,7 @@
 	Contains all JavaScript functions
 	
 	Copyright 2021 Steve Lloyd
+	
 	Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 	and associated documentation files (the "Software"), to deal in the Software without restriction,
 	including without limitation the rights to use, copy, modify, merge, publish, distribute,
@@ -171,6 +172,12 @@ function decreaseSize(id){
 
 //-----------------------------------------------------------------
 
+function hideHelp(){
+	document.getElementById('help-container').style.display = 'none';
+}
+
+//-----------------------------------------------------------------
+
 function increaseSize(id){
 	changeSize(id, step);
 }
@@ -200,6 +207,10 @@ function initialise(){
 	
 	setLinkIcons();
 
+	let help = document.getElementById('help-container');
+	window.addEventListener('keyup', onHelpKeyUp);
+//	help.addEventListener('click', hideHelp);
+	help.style.display = 'none';
 }
 
 //-----------------------------------------------------------------
@@ -273,8 +284,8 @@ function makeContext(id){
 	left.innerHTML = '&nwarr;&#xFE0E;';
 	right.innerHTML = '&searr;&#xFE0E;';
 	rename.innerHTML = '&#9998;&#xFE0E;';
+	link.innerHTML = '&#128279;&#xFE0E;';
 	remove.innerHTML = '&times;&#xFE0E;';
-	link.innerHTML = ' &#128279;&#xFE0E;';
 
 	plus.title = 'Increase size';
 	minus.title = 'Decrease size';
@@ -465,7 +476,7 @@ function moveRight(id){
 //-----------------------------------------------------------------
 
 function onKeyUp(event){
-	if (event.keyCode !== returnCode && event.keyCode != escapeCode) return;
+	if (event.keyCode !== returnCode && event.keyCode !== escapeCode) return;
 	
 	let id = event.currentTarget.id
 	id = id.replace('context-input-', '');
@@ -487,6 +498,12 @@ function onKeyUp(event){
 	view.style.display = 'block';
 	edit.style.display = 'none';
 	help.style.display = 'none';	
+}
+
+//-----------------------------------------------------------------
+
+function onHelpKeyUp(event){
+	if (event.keyCode === escapeCode) hideHelp();
 }
 
 //-----------------------------------------------------------------
@@ -668,6 +685,13 @@ function setLinkIcons(){
 		
 		if (num == (config.order.length - 1))			link.classList.add('link-disabled');
 	}
+}
+
+//-----------------------------------------------------------------
+
+function showHelp(){
+	let help = document.getElementById('help-container');
+	help.style.display = 'block';
 }
 
 //-----------------------------------------------------------------

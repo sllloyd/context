@@ -29,6 +29,7 @@ const step = 1.2;
 var widths = {};
 var config = {};
 var total = 0.0;
+const idLength = 6;
 const startWidth = 300;
 const startHeight = 200;
 const startFontSize = 20;
@@ -42,7 +43,32 @@ const linkEndHelp = 'Click on the green links symbol to finish link';
 
 //                pink      yellow      cyan      green      purple   orange
 var colours = ['#ffb6c1', '#faffc7', '#ccf1ff', '#90ee90', '#e0d7ff', '#ffdac1'];
-var names = ['Family', 'Neighbourhood', 'Peer Group', 'School'];
+var names = ['Family', 'Neighbourhood', 'Peer Group', 'School', '', ''];
+
+//-----------------------------------------------------------------
+
+function addContext(){
+	let num = config.free.shift();
+	if (!num) return;
+	
+	let id = createId(idLength);
+	config.state[id]= {'name': '', 'colour': colours[num], 'width': startWidth, 'height': startHeight, 'font_size': startFontSize, 'scale': 1.0, 'seq': num};
+	config.order.push(id);
+	makeContext(id);
+	renameContext(id);
+	saveConfig();
+	setIcons();
+	
+	// Shrink the others a bit
+	
+	let scale = (config.order.length - 1) / config.order.length;
+	for (let id1 of config.order){
+		if (id1 == id) continue;
+		changeSize(id1, scale, false);
+	}
+	
+	moveLines();	
+}
 
 //-----------------------------------------------------------------
 
@@ -137,8 +163,9 @@ function initialise(){
 	readConfig();
 	
 	for (let id of config.order){
-		makeDiv(id);
+		makeContext(id);
 	}
+	
 	setIcons(); 
 	
 	let container = document.getElementById('container');
@@ -203,7 +230,7 @@ function linkContext(id){
 
 //-----------------------------------------------------------------
 
-function makeDiv(id){
+function makeContext(id){
 	
 	let container = document.getElementById('container');
 	
@@ -456,7 +483,7 @@ function readConfig(){
 		config.state = {}
 		config.order = [];
 		for (let i=0; i<4; i++){
-			let id = createId(6);
+			let id = createId(idLength);
 			config.state[id]= {'name': names[i], 'colour': colours[i], 'width': startWidth, 'height': startHeight, 'font_size': startFontSize, 'scale': 1.0, 'seq': i};
 			config.order.push(id);
 		}
@@ -493,8 +520,20 @@ function removeContext(id){
 	let context = document.getElementById('context-' + id);
 	context.remove();
 	
+	config.free.push(config.state[id].seq);
+	
 	let index = config.order.indexOf(id);
 	if (index > -1) config.order.splice(index, 1);
+	
+	// Expand the others a bit
+	
+	if (config.order.length > 1){
+		let scale =  config.order.length / (config.order.length - 1);
+		for (let id1 of config.order){
+			if (id1 == id) continue;
+			changeSize(id1, scale, false);
+		}
+	}
 	
 	setIcons();
 	saveConfig();
@@ -537,7 +576,7 @@ function removeLine(lineId){
 
 //-----------------------------------------------------------------
 
-function reset(){
+function resetConfig(){
 	let result = confirm('Are you sure you want to reset? This will remove all your customisations including lines and additional contexts.');
 	if (!result) return;
 	
@@ -564,6 +603,13 @@ function setIcons(){
 		right.classList.remove('disabled');
 		if (ord == 0) left.classList.add('disabled');
 		if (ord == (config.order.length - 1)) right.classList.add('disabled');
+	}
+	
+	if (config.free.length > 0){
+		document.getElementById('add-button').classList.remove('disabled');
+	}
+	else {
+		document.getElementById('add-button').classList.add('disabled');
 	}
 }
 

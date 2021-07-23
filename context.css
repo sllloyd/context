@@ -147,7 +147,7 @@ line {
 	cursor: auto;
 }
 
-#delete-line {
+#remove-line {
   display: none;
   position: absolute;
   z-index: 10;

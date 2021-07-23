@@ -133,25 +133,6 @@ function increaseSize(id){
 
 //-----------------------------------------------------------------
 
-function deleteLine(lineId){
-	let line = document.getElementById(lineId);
-	let fakeLine = document.getElementById('fake-' + lineId);
-	
-	line.remove();
-	fakeLine.remove();
-	
-	let index = config.lines.indexOf(lineId);
-	if (index > -1) config.lines.splice(index, 1);
-	
-	saveConfig();
-	setLinkIcons();
-	
-	let div = document.getElementById('delete-line');
-	div.remove();
-}
-
-//-----------------------------------------------------------------
-
 function initialise(){
 	readConfig();
 	
@@ -255,7 +236,7 @@ function makeDiv(id){
 	left.title = 'Move left/up';
 	right.title = 'Move right/down';
 	rename.title = 'Rename';
-	remove.title = 'Delete';
+	remove.title = 'Remove';
 	link.title = 'Link to other context';
 
 	plus.classList.add('action-span');
@@ -287,9 +268,6 @@ function makeDiv(id){
 	contextInput.setAttribute('type', 'text');
 	contextInput.setAttribute('size', 15);
 	contextHelp.innerText = '';
-	// Temporary
-//	rename.classList.add('disabled');
-	remove.classList.add('disabled');
 	
 	plus.id = 'context-plus-' + id
 	minus.id = 'context-minus-' + id
@@ -325,8 +303,8 @@ function makeDiv(id){
 	contextHeader.appendChild(left);
 	contextHeader.appendChild(right);
 	contextHeader.appendChild(rename);
-	contextHeader.appendChild(remove);
 	contextHeader.appendChild(link);
+	contextHeader.appendChild(remove);
 	context.appendChild(contextMain);
 	context.appendChild(contextHeader);
 	context.appendChild(contextHelp);
@@ -496,11 +474,6 @@ function readConfig(){
 
 //-----------------------------------------------------------------
 
-function removeContext(id){
-}
-
-//-----------------------------------------------------------------
-
 function renameContext(id){
 	document.getElementById('context-name-' + id).style.display = 'none';
 	document.getElementById('context-edit-' + id).style.display = 'block';
@@ -509,6 +482,57 @@ function renameContext(id){
 	let help = document.getElementById('context-help-' + id);
 	help.innerText = renameHelp;
 	help.style.display = 'block';	
+}
+
+//-----------------------------------------------------------------
+
+function removeContext(id){
+	let result = confirm('Are you sure you want to remove this context?');
+	if (!result) return;
+	
+	let context = document.getElementById('context-' + id);
+	context.remove();
+	
+	let index = config.order.indexOf(id);
+	if (index > -1) config.order.splice(index, 1);
+	
+	setIcons();
+	saveConfig();
+	
+	// Remove any lines attached to this
+	
+	let removals = [];
+	for (let lineId of config.lines){
+		let bits = lineId.split('-');
+		let id1 = bits[1];
+		let id2 = bits[2];
+		if (id1 == id || id2 == id) removals.push(lineId);
+	}
+	
+	for (let lineId of removals){
+		removeLine(lineId);
+	}
+	
+	moveLines();
+}
+
+//-----------------------------------------------------------------
+
+function removeLine(lineId){
+	let line = document.getElementById(lineId);
+	let fakeLine = document.getElementById('fake-' + lineId);
+	
+	line.remove();
+	fakeLine.remove();
+	
+	let index = config.lines.indexOf(lineId);
+	if (index > -1) config.lines.splice(index, 1);
+	
+	saveConfig();
+	setLinkIcons();
+	
+	let div = document.getElementById('remove-line');
+	if (div) div.remove();
 }
 
 //-----------------------------------------------------------------
@@ -581,11 +605,11 @@ function showMenu(event){
 	lineId = lineId.replace('fake-', '');
 	
 	let div = document.createElement('div');
-	div.id = 'delete-line';
+	div.id = 'remove-line';
 	div.style.display = 'block';
-	div.innerText = 'Delete';
+	div.innerText = 'Remove';
 	div.classList.add('button');
-	div.addEventListener('click', function(){deleteLine(lineId);});
+	div.addEventListener('click', function(){removeLine(lineId);});
 
 	document.body.appendChild(div);
 	

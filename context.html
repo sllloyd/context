@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<!--
+	Context Weighting
+	Version 1.0
+	context.html
+-->
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
@@ -6,8 +11,8 @@
 	<meta name="generator" content="BBEdit 13.5" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<!-- The versions are the last modified time of the file -->
-	<link rel="stylesheet" type="text/css" href="context.css?version=1627054602">
-	<script type="text/javascript" src="context.js?version=1627059485"></script>
+	<link rel="stylesheet" type="text/css" href="context.css?version=1627122309">
+	<script type="text/javascript" src="context.js?version=1627121810"></script>
 </head>
 <body onload="initialise()">
 	<div id="header">Context Weighting</div>
@@ -34,7 +39,7 @@
 			<dt>&#9998;&#xFE0E; Rename context
 			<dd>Allows you to change the name of the context. Edit the text in the box provided and press Return/Enter to save it or ESC to cancel the change.
 			<dt>&#128279;&#xFE0E; Link to another context
-			<dd>Allows you to draw a dotted line between two boxes to show a relationship between contexts. Click on the symbol on one box and it will turn blue and the symbols on other boxes (that don't already have a line from this box) will turn green. Click on one of the green symbols to complete the line. Click on the blue symbol again to cancel this operation. You can remove a line by clicking on it and clicking on the 'Remove' button.
+			<dd>Allows you to draw a dotted line between two boxes to show a relationship between contexts. Click on the symbol on one box and it will turn blue and the symbols on other boxes (that don't already have a line from this box) will turn green. Click on one of the green symbols to complete the line. Click on the blue symbol again to cancel this operation or press ESC. You can remove a line by clicking on it and clicking on the 'Remove' button. The Remove button will automatically go away after three seconds or you can press ESC to get rid of it.
 			<dt>&times;&#xFE0E; Delete the context
 			<dd>Allows you to delete this context (and all lines connected to it). You will be prompted to confirm before the box is deleted.
 			</dl>
@@ -52,6 +57,7 @@
 			</div>
 			<div id="help-footer">
 				<span class="button" onclick="hideHelp()"' id="close-help" title="Close Help">Close</span>
+				<div id="help-copyright">&copy; 2021 Steve Lloyd.</div>
 			</div>
 		</div>
 		</div>

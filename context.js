@@ -100,6 +100,15 @@ function addContext(){
 
 //-----------------------------------------------------------------
 
+function cancelLink(id){
+		let link = document.getElementById('context-link-' + id);
+		link.classList.remove('link-start');
+		startLink = '';
+		setLinkIcons();
+}
+
+//-----------------------------------------------------------------
+
 function changeSize(id, scale, adjustOthers=true){
 	let div = document.getElementById('context-' + id);
 	let nameDiv = document.getElementById('context-name-' + id);
@@ -227,10 +236,7 @@ function initialise(){
 function linkContext(id){
 
 	if (startLink == id){
-		let link = document.getElementById('context-link-' + id);
-		link.classList.remove('link-start');
-		startLink = '';
-		setLinkIcons();
+		cancelLink(id);
 		return;
 	}
 	
@@ -512,7 +518,16 @@ function onKeyUp(event){
 //-----------------------------------------------------------------
 
 function onHelpKeyUp(event){
-	if (event.keyCode === escapeCode) hideHelp();
+	if (event.keyCode === escapeCode){
+		hideHelp();
+		
+		let div = document.getElementById('remove-line');
+		if (div) div.remove();
+		
+		if (startLink != ''){
+			cancelLink(startLink);
+		}
+	}
 }
 
 //-----------------------------------------------------------------

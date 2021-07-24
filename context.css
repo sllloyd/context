@@ -3,7 +3,7 @@
 	Version 1.0
 	context.css
 	
-	Contains all CSS
+	Contains all CSS declarations
 */
 
 * {
@@ -83,6 +83,11 @@ line {
 #help-footer{
 	text-align: right;
 }
+#help-copyright{
+	font-size: 10pt;
+	text-align: center;
+}
+
 .context{
 	display: inline-block;
 	position: relative;

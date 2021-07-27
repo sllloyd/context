@@ -1,0 +1,10 @@
+Context Weighting
+-----------------
+
+This tool allows you to produce a visual representation of the relative priorities of various contexts (Contextual Weighting) by allowing you to change the size, order, names of and relationships between various contexts.
+
+Install the files context.html, context.js and context.css in a suitable directory on your webserver. If you put the .js and .css somewhere else you need to edit the head of context.html accordingly. The version numbers referred to in context.html are the last modified timestamps of the files.
+
+The layout of the boxes and lines is saved in local storage in the user's browser so that the same configuration can be used in future. No other information is collected or stored so no Cookie notification is required.
+
+For further information about context weighting see the Contextual Safeguarding Network at https://www.csnetwork.org.uk/en/toolkit/assessment/context-assessments-and-weighting" target="_blank"></a.

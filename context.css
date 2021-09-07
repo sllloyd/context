@@ -17,6 +17,7 @@ html, body {
 	width: 100%;
 	background-color: #ffffff;
 }
+
 body{ 
 	display:flex; 
 	flex-direction:column; 

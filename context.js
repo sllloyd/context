@@ -25,17 +25,17 @@
 
 "use strict"
 
-const version = 1.1;
-const step = 1.2;
-const idLength = 6;
-const startWidth = 300;
-const startHeight = 200;
-const startFontSize = 20;
-const minWidth = 150;
-const maxWidth = 800;
-const defaultNumber = 4;
-const maxNumber = 6;
-const inputSize = 15;
+const version = 1.1;	// Change this if you change the configuration data stored
+const step = 1.2;		// Amount size changes each increase/decrease
+const idLength = 6;		// Number of characters in the context id string
+const startWidth = 300;		// Default width of a context (in px)
+const startHeight = 200;	// Default height of a context (in px)
+const startFontSize = 20;	// Default size of the context's name (in pt)
+const minWidth = 150;		// Smallest allowed width of a context (in px)
+const maxWidth = 800;		// Largest allowed  width of a context (in px)
+const defaultNumber = 4;	// Default number of contexts
+const maxNumber = 6;		// Largest number of contexts allowed
+const inputSize = 15;		// Width of the context name input field (in chars)
 // These control the attributes of the lines
 const strokeWidth = '3px';
 const strokeColour = '#000000';
@@ -44,8 +44,8 @@ const fakeStrokeWidth = '10px'
 const fakeStrokeColour = '#ffffff';
 // These control the remove button
 const removeTimeout = 3000;	// milliseconds
-const removeOffsetX = 5;
-const removeOffsetY = 30;
+const removeOffsetX = 5;	// in px
+const removeOffsetY = 30;	// in px
 
 const returnCode = 13;
 const escapeCode = 27;
@@ -54,7 +54,7 @@ const svgns = "http://www.w3.org/2000/svg";
 const renameHelp = 'Press Return/Enter to save, ESC to cancel';
 const linkStartHelp = 'Started link from here';
 const linkEndHelp = 'Click on the green links symbol to finish link';
-//                pink      yellow      cyan      green      purple   orange
+//                 pink       yellow      cyan       green     purple    orange
 const colours = ['#ffb6c1', '#faffc7', '#ccf1ff', '#90ee90', '#e0d7ff', '#ffdac1'];
 const names = ['Family', 'Neighbourhood', 'Peer Group', 'School', '', ''];
 
@@ -63,10 +63,12 @@ var widths = {};
 var config = {};
 var totalWidth = 0.0;
 
-
 //-----------------------------------------------------------------
 
 function addContext(){
+
+	// Add a new context
+	
 	let num = config.free.shift();
 	if (num === undefined) return;
 	
@@ -101,15 +103,21 @@ function addContext(){
 //-----------------------------------------------------------------
 
 function cancelLink(id){
-		let link = document.getElementById('context-link-' + id);
-		link.classList.remove('link-start');
-		startLink = '';
-		setLinkIcons();
+
+	// Cancel a link that was started but not completed
+	
+	let link = document.getElementById('context-link-' + id);
+	link.classList.remove('link-start');
+	startLink = '';
+	setLinkIcons();
 }
 
 //-----------------------------------------------------------------
 
 function changeSize(id, scale, adjustOthers=true){
+
+	// Change the size of a context
+	
 	let div = document.getElementById('context-' + id);
 	let nameDiv = document.getElementById('context-name-' + id);
 	let width = div.offsetWidth;
@@ -173,6 +181,9 @@ function changeSize(id, scale, adjustOthers=true){
 //-----------------------------------------------------------------
 
 function createId(length){
+
+	// Creates a unique(ish) id for an object
+	
 	const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	let id = '';
 	for (let i = 0; i < length; i++) {
@@ -185,24 +196,36 @@ function createId(length){
 //-----------------------------------------------------------------
 
 function decreaseSize(id){
+
+	// Decrease the size of a context
+	
 	changeSize(id, 1.0/step);
 }
 
 //-----------------------------------------------------------------
 
 function hideHelp(){
+
+	// Hide the help overlay
+	
 	document.getElementById('help-container').style.display = 'none';
 }
 
 //-----------------------------------------------------------------
 
 function increaseSize(id){
+
+	// Incecrease the size of a context
+
 	changeSize(id, step);
 }
 
 //-----------------------------------------------------------------
 
 function initialise(){
+
+	// Do initialisation
+	
 	readConfig();
 	
 	for (let id of config.order){
@@ -226,8 +249,7 @@ function initialise(){
 	setLinkIcons();
 
 	let help = document.getElementById('help-container');
-	window.addEventListener('keyup', onHelpKeyUp);
-//	help.addEventListener('click', hideHelp);
+	window.addEventListener('keyup', onEscapeKeyUp);
 	help.style.display = 'none';
 }
 
@@ -235,10 +257,16 @@ function initialise(){
 
 function linkContext(id){
 
+	// Link two contexts together with a line (startLink to id)
+	
+	// Clicked on the same one twice so cancel
+	
 	if (startLink == id){
 		cancelLink(id);
 		return;
 	}
+	
+	// Clicked for the first time
 	
 	if (startLink == ''){
 		startLink = id;
@@ -256,7 +284,7 @@ function linkContext(id){
 			help.style.display = 'block';
 			free++;
 		}
-		// Somewhere to go?
+		// If there is somewhere to go change the icons
 		if (free > 0){
 			let link = document.getElementById('context-link-' + id);
 			let help = document.getElementById('context-help-' + id);
@@ -267,6 +295,8 @@ function linkContext(id){
 		return;
 	}
 	
+	// Clicked on a different one
+	
 	makeLine(startLink, id);
 	
 	startLink = '';
@@ -275,6 +305,8 @@ function linkContext(id){
 //-----------------------------------------------------------------
 
 function makeContext(id){
+	
+	// Make a context with its toolbar etc
 	
 	let container = document.getElementById('container');
 	
@@ -385,6 +417,9 @@ function makeContext(id){
 //-----------------------------------------------------------------
 
 function makeLine(id1, id2, addToLines=true){
+
+	// Make a line between two contexts
+	
 	let lineId = 'line-' + id1 + '-' + id2;
 	let fakeId = 'fake-' + lineId;
 	
@@ -424,6 +459,9 @@ function makeLine(id1, id2, addToLines=true){
 //-----------------------------------------------------------------
 
 function moveLine(line, id1, id2){
+
+	// Move the line between two contexts (because one or both moved)
+	
 	let div1 = document.getElementById('context-' + id1);
 	let div2 = document.getElementById('context-' + id2);
 
@@ -441,6 +479,9 @@ function moveLine(line, id1, id2){
 //-----------------------------------------------------------------
 
 function moveLines(){
+
+	// Move the lines between contexts (because some of them both moved)
+
 	for (let lineId of config.lines){
 		let bits = lineId.split('-');
 		let id1 = bits[1];
@@ -454,7 +495,11 @@ function moveLines(){
 
 //-----------------------------------------------------------------
 
-function moveDiv(id, ord, newOrd, newOrd2){
+function moveContext(id, ord, newOrd, newOrd2){
+
+	// Move a context. They are ordered in a line from left to right that
+	// wraps round and starts again from the left if the row is full.
+	
 	let container = document.getElementById('container');
 	let div = document.getElementById('context-' + config.order[ord]);
 	let divBefore = document.getElementById('context-' + config.order[newOrd]);
@@ -477,20 +522,31 @@ function moveDiv(id, ord, newOrd, newOrd2){
 //-----------------------------------------------------------------
 
 function moveLeft(id){
+
+	// Move a context left (or up if it is at the start of a row)
+	// To move left it needs to be where the preceding one was (i.e. this one - 1)
+	
 	let ord = config.order.indexOf(id);
-	if (ord > 0) moveDiv(id, ord, ord-1, ord-1);
+	if (ord > 0) moveContext(id, ord, ord-1, ord-1);
 }
 	
 //-----------------------------------------------------------------
 
 function moveRight(id){
+	
+	// Move a context right (or down if it is at the end of a row)
+	// To move right it needs to be after where the next one was (i.e. this one + 2)
+	
 	let ord = config.order.indexOf(id);
-	if (ord < (config.order.length - 1)) moveDiv(id, ord, ord+2, ord+1);
+	if (ord < (config.order.length - 1)) moveContext(id, ord, ord+2, ord+1);
 }
 
 //-----------------------------------------------------------------
 
 function onKeyUp(event){
+
+	// Handle a return key to end editing the context name
+	
 	if (event.keyCode !== returnCode && event.keyCode !== escapeCode) return;
 	
 	let id = event.currentTarget.id
@@ -517,7 +573,10 @@ function onKeyUp(event){
 
 //-----------------------------------------------------------------
 
-function onHelpKeyUp(event){
+function onEscapeKeyUp(event){
+	
+	// Handle an escape key to hide help or cancel a link between contexts
+	
 	if (event.keyCode === escapeCode){
 		hideHelp();
 		
@@ -533,6 +592,10 @@ function onHelpKeyUp(event){
 //-----------------------------------------------------------------
 
 function readConfig(){
+
+	// Reads the configuration file from local storage (if there is one)
+	// Updates from previous versions if necessary
+	
 	let storedVersion = 0;
 	if (localStorage.getItem('context-weighting') !== null){
 		config = JSON.parse(localStorage.getItem('context-weighting')); 
@@ -569,6 +632,9 @@ function readConfig(){
 //-----------------------------------------------------------------
 
 function renameContext(id){
+
+	// Allows a context to be renamed by revealing the input field
+	
 	document.getElementById('context-name-' + id).style.display = 'none';
 	document.getElementById('context-edit-' + id).style.display = 'block';
 	document.getElementById('context-input-' + id).focus();	
@@ -581,6 +647,9 @@ function renameContext(id){
 //-----------------------------------------------------------------
 
 function removeContext(id){
+
+	// Deletes a context - this cannot be undone
+	
 	let result = confirm('Are you sure you want to remove this context?');
 	if (!result) return;
 	
@@ -605,7 +674,7 @@ function removeContext(id){
 	setIcons();
 	saveConfig();
 	
-	// Remove any lines attached to this
+	// Remove any lines attached to this one
 	
 	let removals = [];
 	for (let lineId of config.lines){
@@ -625,6 +694,9 @@ function removeContext(id){
 //-----------------------------------------------------------------
 
 function removeLine(lineId){
+
+	// Deletes the line between two contexts
+	
 	let line = document.getElementById(lineId);
 	let fakeLine = document.getElementById('fake-' + lineId);
 	
@@ -644,6 +716,9 @@ function removeLine(lineId){
 //-----------------------------------------------------------------
 
 function resetConfig(){
+
+	// Resets the configuration data to the default values
+	
 	let result = confirm('Are you sure you want to reset? This will remove all your customisations including lines and additional contexts.');
 	if (!result) return;
 	
@@ -656,12 +731,18 @@ function resetConfig(){
 //-----------------------------------------------------------------
 
 function saveConfig(){
+
+	// Saves the configuration data to local storage
+	
 	localStorage.setItem('context-weighting', JSON.stringify(config));
 }
 
 //-----------------------------------------------------------------
 
 function setIcons(){
+
+	// Sets the icons appropriately on the context's header
+	
 	for (let id of config.order){
 		let ord = config.order.indexOf(id);
 		let left = document.getElementById('context-left-' + id);
@@ -684,7 +765,7 @@ function setIcons(){
 
 function setLinkIcons(){
 
-	// Sets the link icon in the context header
+	// Sets the link icon in the context's header
 	
 	for (let id of config.order){
 		let link = document.getElementById('context-link-' + id);
@@ -714,6 +795,9 @@ function setLinkIcons(){
 //-----------------------------------------------------------------
 
 function showHelp(){
+
+	// Shows the help information
+	
 	let help = document.getElementById('help-container');
 	help.style.display = 'block';
 }
@@ -721,6 +805,10 @@ function showHelp(){
 //-----------------------------------------------------------------
 
 function showMenu(event){
+
+	// Shows a popup menu near a line that allows it to be deleted
+	// If nothing is selected it goes away after a short time
+	
 	let lineId = event.currentTarget.id
 	lineId = lineId.replace('fake-', '');
 	

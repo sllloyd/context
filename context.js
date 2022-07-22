@@ -58,6 +58,8 @@ const linkEndHelp = 'Click on the green links symbol to finish link';
 const colours = ['#ffb6c1', '#faffc7', '#ccf1ff', '#90ee90', '#e0d7ff', '#ffdac1'];
 const names = ['Family', 'Neighbourhood', 'Peer Group', 'School', '', ''];
 
+//import('https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js');
+import(jspdf);
 var startLink = '';
 var widths = {};
 var config = {};
@@ -191,6 +193,22 @@ function createId(length){
 	}
 
 	return id;
+}
+
+//-----------------------------------------------------------------
+
+function createPDF() {
+	let doc = new jsPDF();  //create jsPDF object
+	doc.fromHTML(document.getElementById('container'), // page element which you want to print as PDF
+  15,
+  15, 
+  {
+    'width': 170  //set width
+  },
+  function(a) 
+   {
+    doc.save('context.pdf'); // save file name as HTML2PDF.pdf
+  });
 }
 
 //-----------------------------------------------------------------

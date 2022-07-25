@@ -58,8 +58,6 @@ const linkEndHelp = 'Click on the green links symbol to finish link';
 const colours = ['#ffb6c1', '#faffc7', '#ccf1ff', '#90ee90', '#e0d7ff', '#ffdac1'];
 const names = ['Family', 'Neighbourhood', 'Peer Group', 'School', '', ''];
 
-//import('https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js');
-import(jspdf);
 var startLink = '';
 var widths = {};
 var config = {};
@@ -198,8 +196,66 @@ function createId(length){
 //-----------------------------------------------------------------
 
 function createPDF() {
-	let doc = new jsPDF();  //create jsPDF object
-	doc.fromHTML(document.getElementById('container'), // page element which you want to print as PDF
+//	let id = config.order[0];
+/*
+let position = {
+  top: rect.top + window.pageYOffset,
+  left: rect.left + window.pageXOffset,
+  bottom: rect.bottom + window.pageYOffset,
+  right: rect.right + window.pageXOffset,
+};	
+	console.log(position.top + ' ' + position.left + ' ' + position.bottom + ' ' + position.right + ' ' + window.innerWidth + ' ' + window.innerHeight);
+*/
+	let doc = new jsPDF({orientation: 'l'});  //create jsPDF object
+	console.log(doc.internal.pageSize.getWidth() + ' ' + doc.internal.pageSize.getHeight());
+	let xScale = doc.internal.pageSize.getWidth() /  window.innerWidth;
+	let yScale = doc.internal.pageSize.getHeight() /  window.innerHeight;
+	console.log(xScale + ' ' + yScale);
+//	doc.text('Hello World', 10, 10);
+	let x, y, w, h, rx =2, ry = 2;
+	doc.setFont('Helvetica', 'normal', 'bold')
+	doc.setFontSize(30);
+	x = 0.5*doc.internal.pageSize.getWidth();
+	y = 10;
+	doc.text('Context Weighting', x, y, {align: 'center', baseline: 'middle'});
+	doc.setFont('Helvetica', 'normal', 'normal')
+	let centres = {};
+	for (let id of config.order){
+		let div = document.getElementById('context-' + id);
+		let rect = div.getBoundingClientRect();
+		let fontSize = config.state[id].font_size
+		let name = config.state[id].name
+		console.log(rect.left + ' ' + rect.right + ' ' + rect.top + ' ' + rect.bottom);
+		x = (rect.left + window.pageXOffset) * xScale;
+		y = (rect.top + window.pageYOffset) * xScale;
+		w = (rect.right - rect.left) * xScale;
+		h = (rect.bottom - rect.top) * xScale;
+		doc.setFillColor(config.state[id].colour);
+		console.log(x + ' ' + y + ' ' + w + ' ' + h);
+		doc.roundedRect(x, y, w, h, rx, ry, 'F') 
+		doc.roundedRect(x, y, w, h, rx, ry, 'S') 
+		x = x + 0.5 * w;
+		y = y + 0.5 * h;
+		centres[id] = {x: x, y: y};
+		doc.setFontSize(fontSize);
+		doc.text(name, x, y, {align: 'center', baseline: 'middle'});
+	}
+	doc.setLineDash([1.5]);
+	doc.setLineWidth(0.75);
+	for (let lineId of config.lines){
+		let bits = lineId.split('-');
+		let id1 = bits[1];
+		let id2 = bits[2];
+		doc.line(centres[id1].x, centres[id1].y, centres[id2].x, centres[id2].y);
+	}
+	let fontList = doc.getFontList();
+	console.log(fontList);
+//	let font = doc.getFont();
+//	console.log(font);
+	doc.save('context.pdf');
+	return;
+	
+		doc.fromHTML(document.getElementById('container'), // page element which you want to print as PDF
   15,
   15, 
   {

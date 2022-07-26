@@ -57,6 +57,8 @@ const linkEndHelp = 'Click on the green links symbol to finish link';
 //                 pink       yellow      cyan       green     purple    orange
 const colours = ['#ffb6c1', '#faffc7', '#ccf1ff', '#90ee90', '#e0d7ff', '#ffdac1'];
 const names = ['Family', 'Neighbourhood', 'Peer Group', 'School', '', ''];
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; 
+const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 var startLink = '';
 var widths = {};
@@ -213,58 +215,58 @@ let position = {
 	console.log(xScale + ' ' + yScale);
 //	doc.text('Hello World', 10, 10);
 	let x, y, w, h, rx =2, ry = 2;
+	
 	doc.setFont('Helvetica', 'normal', 'bold')
 	doc.setFontSize(30);
 	x = 0.5*doc.internal.pageSize.getWidth();
 	y = 10;
 	doc.text('Context Weighting', x, y, {align: 'center', baseline: 'middle'});
+	
 	doc.setFont('Helvetica', 'normal', 'normal')
-	let centres = {};
+	
+	let coords = {};
 	for (let id of config.order){
 		let div = document.getElementById('context-' + id);
 		let rect = div.getBoundingClientRect();
-		let fontSize = config.state[id].font_size
-		let name = config.state[id].name
-		console.log(rect.left + ' ' + rect.right + ' ' + rect.top + ' ' + rect.bottom);
 		x = (rect.left + window.pageXOffset) * xScale;
 		y = (rect.top + window.pageYOffset) * xScale;
 		w = (rect.right - rect.left) * xScale;
 		h = (rect.bottom - rect.top) * xScale;
-		doc.setFillColor(config.state[id].colour);
-		console.log(x + ' ' + y + ' ' + w + ' ' + h);
-		doc.roundedRect(x, y, w, h, rx, ry, 'F') 
-		doc.roundedRect(x, y, w, h, rx, ry, 'S') 
-		x = x + 0.5 * w;
-		y = y + 0.5 * h;
-		centres[id] = {x: x, y: y};
-		doc.setFontSize(fontSize);
-		doc.text(name, x, y, {align: 'center', baseline: 'middle'});
+		let xc = x + 0.5 * w;
+		let yc = y + 0.5 * h;
+		coords[id] = {x: x, y: y, w: w, h: h, xc: xc, yc: yc};
 	}
+	
 	doc.setLineDash([1.5]);
 	doc.setLineWidth(0.75);
 	for (let lineId of config.lines){
 		let bits = lineId.split('-');
 		let id1 = bits[1];
 		let id2 = bits[2];
-		doc.line(centres[id1].x, centres[id1].y, centres[id2].x, centres[id2].y);
+		doc.line(coords[id1].xc, coords[id1].yc, coords[id2].xc, coords[id2].yc);
 	}
-	let fontList = doc.getFontList();
-	console.log(fontList);
-//	let font = doc.getFont();
-//	console.log(font);
-	doc.save('context.pdf');
-	return;
 	
-		doc.fromHTML(document.getElementById('container'), // page element which you want to print as PDF
-  15,
-  15, 
-  {
-    'width': 170  //set width
-  },
-  function(a) 
-   {
-    doc.save('context.pdf'); // save file name as HTML2PDF.pdf
-  });
+	doc.setLineDash([]);
+	doc.setLineWidth(0.5);
+	for (let id of config.order){
+		let fontSize = config.state[id].font_size
+		let name = config.state[id].name
+		doc.setFillColor(config.state[id].colour);
+		doc.roundedRect(coords[id].x, coords[id].y, coords[id].w, coords[id].h, rx, ry, 'F') 
+		doc.roundedRect(coords[id].x, coords[id].y, coords[id].w, coords[id].h, rx, ry, 'S') 
+		doc.setFontSize(fontSize);
+		doc.text(name, coords[id].xc, coords[id].yc, {align: 'center', baseline: 'middle'});
+	}
+	
+	doc.setFontSize(10);
+	x = 10;
+	y = doc.internal.pageSize.getHeight() - 10;
+	let d = new Date();	
+	let ds = days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear() + ' ' + d.getHours() + ':' + d.getMinutes();
+	doc.text(ds, x, y, {align: 'left', baseline: 'bottom'});
+
+	doc.save('context.pdf');
+	
 }
 
 //-----------------------------------------------------------------

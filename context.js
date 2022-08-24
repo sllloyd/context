@@ -1,11 +1,11 @@
 /*
 	Context Weighting
-	Version 1.0
+	Version 1.1
 	context.js
 	
 	Contains all JavaScript functions
 	
-	Copyright 2021 Steve Lloyd
+	Copyright 2020-22 Steve Lloyd
 	
 	Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 	and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -55,7 +55,8 @@ const renameHelp = 'Press Return/Enter to save, ESC to cancel';
 const linkStartHelp = 'Started link from here';
 const linkEndHelp = 'Click on the green links symbol to finish link';
 //                 pink       yellow      cyan       green     purple    orange
-const colours = ['#ffb6c1', '#faffc7', '#ccf1ff', '#90ee90', '#e0d7ff', '#ffdac1'];
+//const colours = ['#ffb6c1', '#faffc7', '#ccf1ff', '#90ee90', '#e0d7ff', '#ffdac1'];
+const colours = ['#00c2cb', '#6f91dd', '#0292b7', '#ff5757', '#e0d7ff', '#ffdac1'];
 const names = ['Family', 'Neighbourhood', 'Peer Group', 'School', '', ''];
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -64,6 +65,8 @@ var startLink = '';
 var widths = {};
 var config = {};
 var totalWidth = 0.0;
+
+window.addEventListener('load', initialise);
 
 //-----------------------------------------------------------------
 

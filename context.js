@@ -55,7 +55,6 @@ const renameHelp = 'Press Return/Enter to save, ESC to cancel';
 const linkStartHelp = 'Started link from here';
 const linkEndHelp = 'Click on the green links symbol to finish link';
 //                 pink       yellow      cyan       green     purple    orange
-//const colours = ['#ffb6c1', '#faffc7', '#ccf1ff', '#90ee90', '#e0d7ff', '#ffdac1'];
 const colours = ['#00c2cb', '#6f91dd', '#0292b7', '#ff5757', '#e0d7ff', '#ffdac1'];
 const names = ['Family', 'Neighbourhood', 'Peer Group', 'School', '', ''];
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; 
@@ -201,22 +200,9 @@ function createId(length){
 //-----------------------------------------------------------------
 
 function createPDF() {
-//	let id = config.order[0];
-/*
-let position = {
-  top: rect.top + window.pageYOffset,
-  left: rect.left + window.pageXOffset,
-  bottom: rect.bottom + window.pageYOffset,
-  right: rect.right + window.pageXOffset,
-};	
-	console.log(position.top + ' ' + position.left + ' ' + position.bottom + ' ' + position.right + ' ' + window.innerWidth + ' ' + window.innerHeight);
-*/
 	let doc = new jsPDF({orientation: 'l'});  //create jsPDF object
-	console.log(doc.internal.pageSize.getWidth() + ' ' + doc.internal.pageSize.getHeight());
 	let xScale = doc.internal.pageSize.getWidth() /  window.innerWidth;
 	let yScale = doc.internal.pageSize.getHeight() /  window.innerHeight;
-	console.log(xScale + ' ' + yScale);
-//	doc.text('Hello World', 10, 10);
 	let x, y, w, h, rx =2, ry = 2;
 	
 	doc.setFont('Helvetica', 'normal', 'bold')
